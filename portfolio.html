@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jaxon Prouse Portfoilo</title>
+</head>
+<body>
+
+<h1>Jaxon Prouse</h1>
+
+<h2>About me</h2>
+<p>I am Jaxon Prouse, a Computer Systems Technology student at Saskatchewan Polytechnic.<br>
+    From a young age I have always been technology and the amazing things humans are able to accomplish with it.<br>
+    I love the problem-solving opportunities that programing gives.</p>
+<h2>Goals</h2>
+<p>I would like to develop products that help people and that they can use in their everyday life.<br>
+    I am seeking a job in software development or IT support.</p>
+<h2>Skills and Abilities</h2>
+<p>My education in the Computer Systems Technology program has given me experience with many different technologies.<br>
+    I have learned about IT support, operating systems, networking and especially programming.
+    I have extensively studied programming data structures and Lightweight Directory Access Protocol.<br>
+    In the summer of 2024 I interned with the IT department of the Lanigan site. This gave real world experience in the industry.</p>
+<h2>Accomplishments</h2>
+
+<h3>Canvas API work</h3>
+<h4>Try it yourself!</h4>
+<p>Click the box then use the arrow keys to move the man and change the direction he is facing.</p>
+<canvas id="myCanvas" width="350" height="300" style="border:1px solid #000000;"></canvas>
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const context = canvas.getContext('2d');
+
+    /**
+     * Creates a dude,
+     * x and y are *currently* the middle of the dude's head
+     */
+    class dude{
+        x = 0
+        y = 0
+
+        bodyLength = 100
+        legLength = this.bodyLength + 25
+        armLength = 20
+        isTposing = false
+        isFacingRight= true
+
+        // useful for any projectiles I may add
+        rightHandX
+        rightHandY
+        leftHandX
+        leftHandY
+        constructor(x, y) {
+            this.create(x, y);
+        }
+        move(dx, dy){
+            //context.clearRect(0, 0, canvas.width, canvas.height);
+            this.x = this.x + dx
+            this.y = this.y + dy
+            context.beginPath();
+            this.create(this.x + dx, this.y + dy);
+        }
+        create(x, y){
+            this.x = x
+            this.y = y
+
+            //creates the head
+            context.arc(x, y, 20, 0, Math.PI * 2, true);
+
+            //creates the body
+            context.moveTo(x, y + 20);
+            context.lineTo(x, y + this.bodyLength);
+
+            //creates right leg
+            context.lineTo(x + 10, y + this.legLength);
+            //left leg
+            context.moveTo(x, y + this.bodyLength);
+            context.lineTo(x - 10, y + this.legLength);
+
+            //arms
+            //changed Tposing to facing direction logic
+            let bodyArmFractionNumberIdk = 2.5
+            context.moveTo(x, y + (this.bodyLength/bodyArmFractionNumberIdk));
+            if (this.isFacingRight) {
+                //left arm
+                context.lineTo(x - this.armLength, y + (this.bodyLength / bodyArmFractionNumberIdk) + 15);
+                this.leftHandX = x - this.armLength
+                this.leftHandY = y + (this.bodyLength / bodyArmFractionNumberIdk) + 15
+                //right arm
+                context.moveTo(x, y + (this.bodyLength / bodyArmFractionNumberIdk));
+                context.lineTo(x + this.armLength, y + (this.bodyLength / bodyArmFractionNumberIdk));
+                this.rightHandX = x + this.armLength
+                this.rightHandY = y + (this.bodyLength / bodyArmFractionNumberIdk)
+
+            } else {
+                //left arm
+                context.lineTo(x - this.armLength, y + (this.bodyLength / bodyArmFractionNumberIdk));
+                this.leftHandX = x - this.armLength + 15
+                this.leftHandY = y + (this.bodyLength / bodyArmFractionNumberIdk)
+                //right arm
+                context.moveTo(x, y + (this.bodyLength / bodyArmFractionNumberIdk));
+                context.lineTo(x + this.armLength, y + (this.bodyLength / bodyArmFractionNumberIdk) + 15);
+                this.rightHandX = x + this.armLength
+                this.rightHandY = y + (this.bodyLength / bodyArmFractionNumberIdk) + 15
+
+            }
+
+            context.stroke();
+        }
+    }
+
+    class gun {
+        x
+        y
+        isFacingRight = true
+
+        constructor(x,y) {
+            this.create(x,y)
+        }
+
+        move(dx, dy){
+            //context.clearRect(0, 0, canvas.width, canvas.height); // currently deletes person
+            this.x = this.x + dx
+            this.y = this.y + dy
+            this.create(this.x + dx, this.y + dy)
+        }
+
+        create(x,y){
+            this.x = x
+            this.y = y
+            //these coords are wack
+            if (this.isFacingRight) {
+                context.fillRect(this.x, this.y, 17, 7)//top
+                context.fillRect(this.x, this.y, 7, 17)//bottom
+            } else {
+                context.fillRect(this.x - 10, this.y, 17, 7)//top
+                context.fillRect(this.x, this.y, 7, 17)//bottom
+            }
+        }
+    }
+
+    class bullet{
+        x
+        y
+
+        constructor(x,y) {
+            this.create(x,y)
+        }
+        move(dx, dy){
+            //context.clearRect(0, 0, canvas.width, canvas.height); // currently deletes person
+            this.x = this.x + dx
+            this.y = this.y + dy
+            this.create(this.x + dx, this.y + dy)
+        }
+
+        create(x, y){
+            this.x = x
+            this.y = y
+            context.fillRect(x, y, 7, 5)
+        }
+    }
+
+    let dude1 = new dude(100, 100);
+    let gun1 = new gun(dude1.rightHandX, dude1.rightHandY - 10)
+
+    //let elements = {};
+
+
+
+    function redrawCanvas(){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        dude1.move(0, 0)
+        gun1.move(0, 0)
+        //bullet1.move(0, 0)
+    }
+
+    //Move left
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 37) {
+            //context.clearRect(0, 0, canvas.width, canvas.height);
+            dude1.isFacingRight = false
+            gun1.isFacingRight = false
+
+            dude1.move(-10,0)
+            gun1.x = dude1.leftHandX
+            gun1.y = dude1.leftHandY -10
+            gun1.move(-10, 0)
+            redrawCanvas()
+        }
+    });
+
+    //Move up
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 38) {
+            dude1.move(0,-10)
+            gun1.move(0,-10)
+            redrawCanvas()
+        }
+    });
+
+    //Move right
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 39) {
+            dude1.isFacingRight = true
+            gun1.isFacingRight = true
+
+            dude1.move(10,0)
+            gun1.x = dude1.rightHandX - 20
+            gun1.y = dude1.rightHandY -10
+            gun1.move(10,0)
+
+            redrawCanvas()
+        }
+    });
+
+    //Move down
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 40) {
+            dude1.move(0,10)
+            gun1.move(0,10)
+
+            redrawCanvas()
+        }
+    });
+
+    // space
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 32) {
+            let bullet1 = new bullet(gun1.x, gun1.y)
+            let i = 0
+            while(bullet1.x < canvas.width) {
+
+                redrawCanvas()
+                if (gun1.isFacingRight) {
+
+                    bullet1.create(bullet1.x + 0.001, bullet1.y)
+                    bullet1.x = bullet1.x + 0.001
+
+                    //dude1.move(0,0)
+                    console.log("x:" + bullet1.x)
+
+                    i++;
+
+                    //setTimeout(() => {
+                    //  console.log("Waited 1 second");
+                    //}, 1000);
+
+                } else {
+                    bullet1.create(bullet1.x - 1, bullet1.y)
+                    bullet1.x = bullet1.x - 1
+
+                    //dude1.move(0,0)
+                    console.log("x:" + bullet1.x)
+                    i++;
+                    //setTimeout(() => {
+                    // console.log("Waited 1 second");
+                    //}, 1000);
+                }
+            }
+        }
+    });
+</script>
+<p>I have done many hours for work with Canvas API, I way to draw and animate with pure JavaScript.<br>
+    In this example we see a man holding a stick. This was painstakingly drawn line by line by me with code.<br>
+    Canvas API allows you to display things on the screen by letting you draw two things: rectangles and paths.<br>
+    I found this to a good exercise in Object Oriented Programing, as while as being fun.</p>
+
+<h2>Hippotherapy Project</h2>
+<p>This project was done as part of my COSA and CPMG classes at Saskatchewan Polytechnic, where me and my team developed an application for an external client.<br>
+    Our application was made to keep track of patients undergoing equine therapy, which is essentially using horseback riding to correct a patient's severely misshapen posture.<br>
+    This project used Flutter, Firebase and ASP.NET. It taught me about project management, the test driven development process as well as mobile first frontend development and backend APIs.<br>
+    The things I am proudest of from this project is completing the authorization for this app, which greatly increased the app's security <br>
+    and I was able to send emails when users signed up so we could ensure all users had valid emails.<br></p>
+
+<h2>Roll to Mathematically Cause Chaos</h2>
+<p>Me and a partner created a website that allowed users to create and organize characters for Table Top Role Playing Games,<br>
+specifically the game Dungeons and Dragons 5th Edition. It allowed you to enter attributes of your character and then save that character to our backend database.<br>
+There was also a feature that allowed you to calculate the damage per round a character would do against an enemy based on the characters attributes and how strong of an enemy they are facing.<br>
+    This project used Vue for the frontend and Typescript for the backend.<br></p>
+
+<h2>Contact</h2>
+<h3>You can reach me at the email address jax.prouse8@gmail.com. I look forward to hearing from you!</h3>
+
+
+</body>
+</html>
